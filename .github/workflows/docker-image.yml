@@ -14,7 +14,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
+    - name: Build the Docker image for IngestDataService
       run: docker build IngestDataService --file IngestDataService/Dockerfile --tag ingestdataservice:github
-    - name: push image to byronwu12345
-      run: docker push byronwu12345/ingestdataservice:github
+    - name: Build the Docker image for ExposeDataService
+      run: docker build ExposeDataService --file ExposeDataService/Dockerfile --tag exposedataservice:github
+    - name: Build the Docker image for MachineStreamGateway
+      run: docker build MachineStreamGateway --file MachineStreamGateway/Dockerfile --tag machinestreamgateway:github
