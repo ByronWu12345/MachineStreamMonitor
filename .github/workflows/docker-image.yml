@@ -6,15 +6,47 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jobs:
+services:
+  machinestreamgateway:
+    image: ${DOCKER_REGISTRY-}machinestreamgateway
+    build:
+      context: .
+      dockerfile: MachineStreamGateway/Dockerfile
 
-  build:
+  ingestdataservice:
+    image: ${DOCKER_REGISTRY-}ingestdataservice
+    build:
+      context: .
+      dockerfile: IngestDataService/Dockerfile
+    ports:
+      - 8008:80
+      - 8009:443
+    depends_on:
+      - rabbitmq
 
-    runs-on: ubuntu-latest
+  exposedataservice:
+    image: ${DOCKER_REGISTRY-}exposedataservice
+    build:
+      context: .
+      dockerfile: ExposeDataService/Dockerfile
+    ports:
+      - 8088:80
+      - 8089:443
+    depends_on:
+      - rabbitmq
+      - mongo
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file IngestDataService/Dockerfile --tag my-image-name:$(date +%s)
-           docker build . --file ExposeDataService/Dockerfile --tag my-image-name:$(date +%s)
-           docker build . --file MachineStreamGateway/Dockerfile --tag my-image-name:$(date +%s)
+  rabbitmq:
+    image: rabbitmq:management    
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  mongo:
+    image: mongo
+    #restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
