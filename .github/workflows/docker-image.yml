@@ -16,4 +16,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build IngestDataService --file IngestDataService/Dockerfile --tag ingestdataservice:github
-           docker push byronwu12345/ingestdataservice:github
+    - name: push image to byronwu12345
+      run: docker push byronwu12345/ingestdataservice:github
